@@ -6,19 +6,17 @@ import { useDispatch } from "react-redux";
 import { removeWidget } from "src/features/dashboardSlice";
 import { X } from "lucide-react";
 import { toast } from "../ui/use-toast";
+import Confirmation from "./Confirmation";
 
 function Categories({ category }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  const dispatch = useDispatch();
-  const handleRemove = (widgetId) => {
-    dispatch(removeWidget({ categoryId: category.id, widgetId }));
-    toast({
-      variant: "success",
-      title: "Widget Removed Successfully",
-      duration: 2000,
-    });
+  const [widgetId, setWidgetId] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const handleShowConfirmation = (widgetId) => {
+    setShowConfirmation(true);
+    setWidgetId(widgetId);
   };
+
   return (
     <div className="flex flex-col gap-1">
       <h5 className="text-[#0b0b0b] font-bold">{category.name}</h5>
@@ -37,17 +35,27 @@ function Categories({ category }) {
                 className="p-1 bg-white border absolute -top-1 -right-1 text-gray-400
                rounded-full items-center justify-center cursor-pointer
                 hover:text-red-500 hover:border-red-500"
-                onClick={() => handleRemove(widget.id)}
+                onClick={() => handleShowConfirmation(widget.id)}
               >
                 <X className=" h-3 w-3" />
               </div>
             </ChartCard>
           ))}
         <ChartCard className={"flex items-center justify-center"}>
-          <AddNewWidgetButton type="section" setOpen={setDrawerOpen}  />
+          <AddNewWidgetButton type="section" setOpen={setDrawerOpen} />
         </ChartCard>
       </div>
-      <SelectWidgetDrawer isOpen={isDrawerOpen} setIsOpen={setDrawerOpen} category={category.id} />
+      <SelectWidgetDrawer
+        isOpen={isDrawerOpen}
+        setIsOpen={setDrawerOpen}
+        category={category.id}
+      />
+      <Confirmation
+        widgetId={widgetId}
+        isOpen={showConfirmation}
+        setShowConfirmation={setShowConfirmation}
+        category={ category}
+      />
     </div>
   );
 }
